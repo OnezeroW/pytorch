@@ -15,6 +15,9 @@ if [[ "$1" == "--with-cuda" ]]; then
   shift
 fi
 
+# Options to compile gloo with Infiniband
+WITH_IBVERBS=1
+
 cd "$(dirname "$0")/../.."
 PWD=`printf "%q\n" "$(pwd)"`
 BASE_DIR="$PWD"
@@ -45,6 +48,11 @@ NCCL_ROOT_DIR=${NCCL_ROOT_DIR:-$INSTALL_DIR}
 if [[ $WITH_CUDA -eq 1 ]]; then
     GLOO_FLAGS="-DUSE_CUDA=1 -DNCCL_ROOT_DIR=$NCCL_ROOT_DIR"
 fi
+
+if [[ $WITH_IBVERBS -eq 1 ]]; then
+    GLOO_FLAGS="$GLOO_FLAGS -DUSE_IBVERBS=1 -DBUILD_SHARED_LIBS=1"
+fi
+
 CWRAP_FILES="\
 $BASE_DIR/torch/lib/ATen/Declarations.cwrap;\
 $BASE_DIR/torch/lib/ATen/Local.cwrap;\
